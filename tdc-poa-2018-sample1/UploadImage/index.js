@@ -3,8 +3,13 @@ const imageService = require('../image-service');
 const runner = require('../http-request');
 const request = runner(process.env.COGNITIVE_SECRET);
 
-module.exports = async function (context, req) {
-    const isImageValid = await imageService.blobStore(req.body);
+module.exports = async function (context, req) {    
+    const buffer = req.body.image.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    const isImageValid = await imageService.blobStore({
+        type: buffer[1],
+        buffer: new Buffer(buffer[2], 'base64'),
+        name: req.body.name
+    });
     if (!isImageValid) {
         context.res = {
             status: 400,
@@ -13,15 +18,15 @@ module.exports = async function (context, req) {
         return;
     }
 
-    const analyze = await request({
+    const { adult, description } = await request({
         method: 'POST',
         visualFeatures: ['Description', 'Adult'],
         data: {
-            url: `${blobStoreURL}${req.body.name}`
+            url: `${process.env.BLOB_URL}${req.body.name}`
         }
     });
 
-    if (analyze.adult.isAdultContent) {
+    if (adult.isAdultContent) {
         context.res = {
             status: 400,
             body: 'Imagem recusada por conter conteúdo impróprio'
@@ -34,7 +39,7 @@ module.exports = async function (context, req) {
             '_': `${blobStoreURL}${req.body.name}`
         },
         description: {
-            '_': analyze.description.captions[0].text
+            '_': description.captions[0] ? description.captions[0].text : description.tags[0]
         },
     }).then(value => {
         context.res = {

@@ -33,21 +33,24 @@ module.exports = function (apiKey) {
             method,
             visualFeatures
         } = params;
+
+        const opts = options({
+            data,
+            method,
+            params: visualFeatures
+        });
+
         return new Promise((resolve, reject) => {
-            const req = https.request(options({
-                data,
-                method,
-                params: visualFeatures
-            }), (res) => {
+            const req = https.request(opts, (res) => {
                 console.log(`statusCode: ${res.statusCode}`);
                 res.on('data', (result) => {
-                    console.log(result);
-                    resolve(result);
+                    console.log(result.toString('utf8'));
+                    resolve(JSON.parse(result.toString('utf8')));
                 });
             });
 
             req.on('error', (error) => {
-                console.error(error);
+                console.error(error.toString('utf8'));
                 reject(error);
             });
 

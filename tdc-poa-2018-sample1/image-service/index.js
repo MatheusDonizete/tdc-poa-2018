@@ -43,8 +43,11 @@ module.exports = {
     },
     blobStore: (image) => {
         const blobService = azure.createBlobService(process.env.STORE_SECRET);
+
         return new Promise((resolve, reject) => {
-            blobService.createBlockBlobFromStream('imagesdata', image.name, image.buffer, image.buffer.length, err => {
+            blobService.createBlockBlobFromText('imagesdata', image.name, image.buffer, {
+                contentType: image.type
+            }, err => {
                 if (err) {
                     reject(err);
                     return;

@@ -4,7 +4,7 @@
     {
       "label": "runFunctionsHost",
       "type": "shell",
-      "command": "func host start",
+      "command": "func host start --cors *",
       "isBackground": true,
       "presentation": {
         "reveal": "always"
