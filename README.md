@@ -1,4 +1,4 @@
-# TheDevelopersConference Porto Alegre 2018
+# Tornando as coisa mais simples com Azure functions e Node.JS
 
 Exemplos utilizados na palestra: **Tornando as coisa mais simples com Azure functions e Node.JS** realizada no TDC (The Developers Conference) 2018, edição de Porto Alegre, na trilha de Node.JS.
 
